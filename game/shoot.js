@@ -42,17 +42,27 @@ function collisions()
 function bullet_collision()
 {
     //collision between bullet and walls
-    for (var i = 0; i < player1.bullets.length; i++)
-    {
+    for (var i = 0; i < player1.bullets.length; i++) {
         if (Math.abs(player1.bullets[i].position.x) >= WIDTH / 2 ||
-            Math.abs(player1.bullets[i].position.y) >= HEIGHT / 2)
-        {
+            Math.abs(player1.bullets[i].position.y) >= HEIGHT / 2) {
             scene.remove(player1.bullets[i]);
             player1.bullets.splice(i, 1);
             i--;
         }
+        if ((player1.bullets[i].position.x >= (player2.position.x - 20) && player1.bullets[i].position.x <= (player2.position.x + 20)) &&
+            (player1.bullets[i].position.y >= (player2.position.y - 20) && player1.bullets[i].position.y <= (player2.position.y + 20))) {
+            scene.remove(player2.graphic);
+            player1.kill += 1;
+            player2.position.x = Math.floor(Math.random() * WIDTH/2);
+            if(Math.floor(Math.random() * 10) % 2 == 0)
+                player2.position.x *= -1;
+            player2.position.y = Math.floor(Math.random() * HEIGHT/2);
+            if(Math.floor(Math.random() * 10) %2 == 0)
+                player2.position.y *= -1;
+            console.log(player2.position);
+            scene.add(player2.graphic);
+        }
     }
-
 }
 
 function player_collision()
@@ -61,12 +71,25 @@ function player_collision()
     var x = player1.graphic.position.x + WIDTH / 2;
     var y = player1.graphic.position.y + HEIGHT / 2;
 
+    if ( x < 0 )
+        player1.graphic.position.x -= x;
     if ( x > WIDTH )
         player1.graphic.position.x -= x - WIDTH;
     if ( y < 0 )
         player1.graphic.position.y -= y;
     if ( y > HEIGHT )
         player1.graphic.position.y -= y - HEIGHT;
+    if ((player1.position.x >= (player2.position.x - 20) && player1.position.x <= (player2.position.x + 20)) &&
+        (player1.position.y >= (player2.position.y - 20) && player1.position.y <= (player2.position.y + 20))){
+        let tmp = new Date();
+        if(Math.abs(player1.lastTimeTouched - tmp) > 3000)
+        {
+            player1.life -= 1;
+            player1.lastTimeTouched = tmp;
+            if(player1.life == 0)
+                player1.dead();
+        }
+    }
 
 }
 
@@ -93,7 +116,13 @@ function player_falling()
             && (y > tileY) 
             && (y < mtileY))
         {
-            player1.dead();
+            player1.life -= 1;
+            if(player1.life == 0)
+                player1.dead();
+            player1.position.x = 0;
+            player1.position.y = 0;
+            player1.graphic.position.x = 0;
+            player1.graphic.position.y = 0;
         }
     }
 

@@ -6,6 +6,9 @@ var Player = function(name, color, position, direction) {
     this.bullets = new Array();
     this.direction = direction;
     this.speed = 0;
+    this.goLeft = false;
+    this.lastTimeTouched = new Date();
+    this.kill = 0;
 
     this.material = new THREE.MeshLambertMaterial({
         color: color,
@@ -21,6 +24,8 @@ var Player = function(name, color, position, direction) {
     THREE.GeometryUtils.merge(canon, sphere);
 
     this.graphic = new THREE.Mesh(sphere, this.material);
+    this.graphic.position.x = this.position.x;
+    this.graphic.position.y = this.position.y;
     this.graphic.position.z = 6;
     this.graphic.rotateOnAxis(new THREE.Vector3(0,0,1), this.direction);
 };
@@ -53,10 +58,13 @@ Player.prototype.decelerate = function (distance) {
 
 Player.prototype.displayInfo = function () {
     jQuery('#'+this.name+' >.life').text(this.life);
+    jQuery('#'+this.name+' >.kill').text(this.kill);
+    if(this.kill > 1)
+        jQuery('#'+this.name+' >.grammar').text("kills");
 }
 
 Player.prototype.turnRight = function (angle) {
-    this.direction += angle;
+    this.direction -= angle;
     this.graphic.rotateOnAxis(new THREE.Vector3(0,0,1), angle);
 };
 
@@ -73,6 +81,7 @@ Player.prototype.move = function () {
     );
 
     this.graphic.position = moveTo;
+    this.position = moveTo;
     if (this.speed > 0) {
         this.speed = this.speed - 0.04;
     }

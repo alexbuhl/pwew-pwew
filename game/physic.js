@@ -14,5 +14,17 @@ function update()
         player1.decelerate(moveDistance);
 
     player1.move();
+    console.log(player2.goLeft);
+    if(player2.goLeft) {
+        player2.decelerate(moveDistance*12);
+        if(player2.position.x < 0 && Math.abs(player2.position.x) > WIDTH/2)
+            player2.goLeft = false;
+    }
+    else{
+        player2.accelerate(moveDistance);
+        if(player2.position.x > WIDTH/2)
+            player2.goLeft = true;
+    }
+    player2.move();
     controls.update();
 }
